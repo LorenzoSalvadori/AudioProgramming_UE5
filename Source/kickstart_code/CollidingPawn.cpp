@@ -4,7 +4,7 @@
 #include "CollidingPawn.h"
 
 #include<UObject/ConstructorHelpers.h>
-#include<Particles/ParticleSystem.h>
+#include<Particles/ParticleSystemComponent.h>
 #include<Components/SphereComponent.h>
 #include<Camera/CameraComponent.h>
 #include<GameFramework/SpringArmComponent.h>
@@ -32,7 +32,31 @@ ACollidingPawn::ACollidingPawn()
 		SphereVisual->SetWorldScale3D(FVector(0.8f));
 	}
 
+	// create a particle system that can be activated/deactivated
+	OurParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("MovementParticles"));
+	OurParticleSystem->SetupAttachment(SphereVisual);
+	OurParticleSystem->bAutoActivate = false;
+	OurParticleSystem->SetRelativeLocation(FVector(-20.0f, 0.0f, 20.0f));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("/Game/StarterContent/Particles/P_Fire.P_Fire"));
+	if (ParticleAsset.Succeeded()) 
+	{
+		OurParticleSystem->SetTemplate((ParticleAsset.Object));
+	}
 
+	// setting up a spring arm for smooth camera motion
+	USpringArmComponent* SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraAttachmentArm"));
+	SpringArm->SetupAttachment(RootComponent);
+	SpringArm->SetRelativeRotation(FRotator(-45.0f, 0.f, 0.f));
+	SpringArm->TargetArmLength = 400.0f;
+	SpringArm->bEnableCameraLag = true;
+	SpringArm->CameraLagSpeed = 3.0f;
+
+	// create the camera and attach it to the spring
+	UCameraComponent* Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ActualCamera"));
+	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+	// Take control of default player
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 }
 

@@ -28,5 +28,15 @@ public:
 
 	UPROPERTY()
 		class UParticleSystemComponent* OurParticleSystem;
+	UPROPERTY()
+	class UCollidingPawnMovementComponent* OurMovementComponent;
 
+	// interface for returning the custom movement component for this APawn
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
+
+	// input management
+	void MoveForward(float AxisValue);
+	void MoveRight(float AxisValue);
+	void Turn(float AxisValue);
+	void ParticleToggle();
 };

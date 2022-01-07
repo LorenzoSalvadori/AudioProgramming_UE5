@@ -13,5 +13,7 @@ UCLASS()
 class KICKSTART_CODE_API UCollidingPawnMovementComponent : public UPawnMovementComponent
 {
 	GENERATED_BODY()
+public:
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 };
